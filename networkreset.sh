@@ -6,15 +6,42 @@ echo "[+] Backing up configuration files"
 declare -a arr=("com.apple.airport.preferences.plist" "com.apple.network.indentification.plist"
 "NetworkInterfaces.plist" "preferences.plist")
 
-mkdir ~/networkbackup
+DIRECTORY=~/networkbackup
+
+if [ ! -d "$DIRECTORY" ]; then
+  mkdir ~/networkbackup
+fi
+
 
 ## now loop through the above array
 for i in "${arr[@]}"
 do
-   echo "-> Backing up $i"
-   cp /Library/Preferences/SystemConfiguration/$i ~/networkbackup
-   echo "----"
-   # or do whatever with individual element of the array
+  FILE=/Library/Preferences/SystemConfiguration/$i
+  if [ -f "$FILE" ]; then
+    echo "-> Backing up $i"
+    cp $FILE ~/networkbackup
+    echo "----"
+  else
+    echo "$FILE does not exist"
+  fi
 done
 
+if [ $1 == 'remove' ]; then
 
+  for i in "${arr[@]}"
+  do
+    FILE=/Library/Preferences/SystemConfiguration/$i
+    BACKUP=~/networkbackup/$i
+    if [ -f "$FILE" ]; then
+      if [ -f "$BACKUP" ]; then
+        echo "-> Removing  $FILE"
+        rm $FILE
+        echo "----"
+      else
+        echo "[!] The file $FILE has not been backed up"
+      fi
+    else
+      echo "$FILE does not exist"
+    fi
+  done
+fi
