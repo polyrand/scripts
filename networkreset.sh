@@ -39,6 +39,7 @@ if [ $1 == 'remove' ]; then
         echo "----"
       else
         echo "[!] The file $FILE has not been backed up"
+        break
       fi
     else
       echo "$FILE does not exist"
