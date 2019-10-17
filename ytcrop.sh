@@ -3,7 +3,7 @@
 
 if [ $# -eq 0 ]; then
     echo "Usage: ytc [ID] [START] [LENGTH] [NAME] [SPEED]
-Example: ytc rHLEWRxRGiM 00:01:30 15 test 1.5"
+Example: ytc rHLEWRxRGiM 00:01:30 15 test 1.5 ¿sound?"
     exit 1
 fi
 
@@ -19,7 +19,8 @@ echo "Lenght: $LENGTH"
 echo "Speed: $SPEED"
 
 
-youtube-dl -f 'best[height<=720][ext=mp4]' --no-playlist -o 'dl.%(ext)s' $ID
+youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' --no-playlist -o 'dl.%(ext)s' $ID
+
 
 
 if [ $6 == 'sound' ]; then

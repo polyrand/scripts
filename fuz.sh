@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-
 # https://medium.com/adorableio/simple-note-taking-with-fzf-and-vim-2a647a39cfa
+# Modified from https://gist.github.com/BaseCase/c45299e4f8474119881d708a4b728fbf
+
 
 set -e
 
@@ -17,7 +18,7 @@ main() {
 
 select_file() {
   given_file="$1"
-  fzf --preview="cat {}" --preview-window=right:70%:wrap --query="$given_file"
+  fzf --preview="bat {}" --preview-window=right:70%:wrap --query="$given_file"
 }
 
 main ""
