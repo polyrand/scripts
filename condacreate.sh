@@ -2,7 +2,7 @@
 
 
 if [ $# -eq 0 ]; then
-    echo "Usage: condacreate [NAME] [VERSION]
+    echo "Usage: condacreate [NAME] [VERSION] ¿alias?
 Example: condacreate nlp 3.7"
     exit 1
 fi
@@ -16,9 +16,9 @@ echo "Using Python version: $VERSION"
 
 conda create --name "$NAME" python="$VERSION"
 
-conda install --name "$NAME" -c conda-forge numpy pandas ipython black flake8 matplotlib pycodestyle pydocstyle flake8-bugbear more-itertools jupyterlab
+conda install --name "$NAME" -c conda-forge numpy pandas ipython black flake8 matplotlib pycodestyle pydocstyle flake8-bugbear more-itertools jupyterlab mypy
 
-conda run -n "$NAME" labextension install @jupyterlab/toc @jupyterlab/celltags @jupyter-widgets/jupyterlab-manager @ryantam626/jupyterlab_code_formatter
+conda run -n "$NAME" jupyter labextension install @jupyterlab/toc @jupyterlab/celltags @jupyter-widgets/jupyterlab-manager @ryantam626/jupyterlab_code_formatter
 
 conda install --name "$NAME" -c conda-forge jupyterlab_code_formatter
 
@@ -28,11 +28,11 @@ conda run -n "$NAME" jupyter serverextension enable --py jupyterlab_code_formatt
 
 
 
-# if [ $6 == 'sound' ]; then
-#     ffmpeg -ss "$START" -t "$LENGTH" -i dl.mp4 "$NAME".mp4
+if [ $3 == 'alias' ]; then
+    echo "alias $NAME='conda activate $NAME'" >> ~/dotfiles/.condalias
 # else
 #     ffmpeg -ss "$START" -t "$LENGTH" -i dl.mp4 -an -vf "setpts=(1/"$SPEED")*PTS" "$NAME".mp4
-# fi
+fi
 
 
 # echo " ===> Removing files..."
