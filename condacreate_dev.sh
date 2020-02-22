@@ -17,7 +17,7 @@ echo "Using Python version: $VERSION"
 conda create --name "$NAME" python="$VERSION"
 
 # basic libs
-conda install -y --name "$NAME" -c conda-forge ipython jupyterlab nb_conda_kernels
+conda install -y --name "$NAME" -c conda-forge ipython jupyterlab nb_conda_kernels black
 
 # jupyter lab extensions
 conda run -n "$NAME" jupyter labextension install @jupyterlab/toc --no-build
