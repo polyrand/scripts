@@ -24,6 +24,4 @@ conda run -n "$NAME" ipython kernel install --user --name="$NAME"
 
 if [[ $3 == 'alias' ]]; then
     echo "alias $NAME='conda activate $NAME'" >> ~/dotfiles/.condalias
-# else
-#     ffmpeg -ss "$START" -t "$LENGTH" -i dl.mp4 -an -vf "setpts=(1/"$SPEED")*PTS" "$NAME".mp4
 fi

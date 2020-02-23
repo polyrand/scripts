@@ -24,6 +24,7 @@ conda run -n "$NAME" jupyter labextension install @jupyterlab/toc --no-build
 conda run -n "$NAME" jupyter labextension install @jupyterlab/celltags --no-build
 conda run -n "$NAME" jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build
 conda run -n "$NAME" jupyter labextension install @ryantam626/jupyterlab_code_formatter --no-build
+conda run -n "$NAME" jupyter labextension install @aquirdturtle/collapsible_headings --no-build
 conda install -y --name "$NAME" -c conda-forge jupyterlab-git
 
 conda install -y --name "$NAME" -c conda-forge jupyterlab_code_formatter
@@ -34,12 +35,5 @@ conda run -n "$NAME" jupyter lab build
 
 if [[ $3 == 'alias' ]]; then
     echo "alias $NAME='conda activate $NAME'" >> ~/dotfiles/.condalias
-# else
-#     ffmpeg -ss "$START" -t "$LENGTH" -i dl.mp4 -an -vf "setpts=(1/"$SPEED")*PTS" "$NAME".mp4
 fi
 
-
-# youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' --no-playlist -o 'dl.%(ext)s' $ID
-# echo " ===> Removing files..."
-# rm dl.mp4
-# echo " ===> Done! "
