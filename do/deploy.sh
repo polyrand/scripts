@@ -13,8 +13,8 @@ else
    exit 1
 fi
 
-FOLDER="acpic"
-TAR="acpic.tar.gz"
+FOLDER="app"
+TAR="app.tar.gz"
 
 if [ "$2" == "client" ] ; then
    scp client.js $HOST:$FOLDER

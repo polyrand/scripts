@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
-adduser "$1"
+adduser "r"
 
-usermod -aG sudo "$1"
+usermod -aG sudo "r"
 
 
-rsync --archive --chown="$1":"$1" ~/.ssh /home/"$1"
+rsync --archive --chown="r":"r" ~/.ssh /home/"r"
+
+ufw allow OpenSSH
+
+ufw enable
