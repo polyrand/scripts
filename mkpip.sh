@@ -20,9 +20,15 @@ echo "Pip location:"
 pip_cmd=$(command -v pip)
 echo "$pip_cmd"
 
-pip_path="$(pwd)/.venv/bin/pip"
+current=$(pwd)
+pip_path="$current/.venv/bin/pip"
+echo "$pip_path"
 
-[ "$pip_cmd" == "$pip_path" ] || exit 1
+if [[ "$pip_cmd" -ef "$pip_path" ]]; then
+    echo "paths match"
+else
+    exit 1
+fi
 
 echo "Python location"
 command -v python
