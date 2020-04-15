@@ -13,3 +13,5 @@ sudo apt install -y nodejs
 sudo apt install -y build-essential
 
 sudo npm install pm2 -g
+
+sudo chown -R $USER:$(id -gn $USER) ~/.config

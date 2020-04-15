@@ -49,6 +49,18 @@ if [[ ! -d .vscode ]]; then
     echo "$interpreter" >> .vscode/settings.json
 fi
 
+# nvim settings
+if [[ ! -f .vim/coc-settings.json ]]; then
+
+    [ -d .vim ] || mkdir .vim
+
+    interpreter='{
+        "python.pythonPath": ".venv/bin/python"
+    }'
+
+    echo "$interpreter" >> .vim/coc-settings.json
+fi
+
 if [[ $2 == 'kernel' ]]; then
     echo "Enabling kernel env for Jupyter"
     ipython kernel install --user --name="$NAME"
