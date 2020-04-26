@@ -2,8 +2,8 @@
 
 # usage
 if [[ $1 == 'h' ]]; then
-    echo "Usage: mkpip [NAME] kernel/nokernel (anything that != 'kernel' really)
-Example: mkpip nlp nok"
+    echo "Usage: mkpip [NAME] [kernel/nokernel] (anything that != 'kernel' really) [ln]?
+Example: mkpip nlp nokernel ln"
     exit 1
 fi
 
@@ -43,8 +43,8 @@ if [[ ! -d .vscode ]]; then
     mkdir .vscode
 
     interpreter='{
-        "python.pythonPath": ".venv/bin/python"
-    }'
+    "python.pythonPath": ".venv/bin/python"
+}'
 
     echo "$interpreter" >> .vscode/settings.json
 fi
@@ -55,8 +55,8 @@ if [[ ! -f .vim/coc-settings.json ]]; then
     [ -d .vim ] || mkdir .vim
 
     interpreter='{
-        "python.pythonPath": ".venv/bin/python"
-    }'
+    "python.pythonPath": ".venv/bin/python"
+}'
 
     echo "$interpreter" >> .vim/coc-settings.json
 fi
@@ -65,3 +65,11 @@ if [[ $2 == 'kernel' ]]; then
     echo "Enabling kernel env for Jupyter"
     ipython kernel install --user --name="$NAME"
 fi
+
+
+if [[ $3 == 'ln' ]]; then
+    echo "Creating symlink of virtualenv to ~/.virtualenvs"
+    ln -s $(pwd)/.venv ~/.virtualenvs/"$NAME"
+fi
+
+

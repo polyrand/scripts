@@ -17,6 +17,7 @@ echo "alias checknginx='sudo nginx -t'" >> ~/.bash_aliases
 echo "alias pm2npm='pm2 start npm -- start'" >> ~/.bash_aliases
 echo "alias ..='cd ..'" >> ~/.bash_aliases
 echo "alias ...='cd ../..'" >> ~/.bash_aliases
+echo "alias ufws='sudo ufw status'" >> ~/.bash_aliases
 
 # sudo apt -y install python3-venv
 
