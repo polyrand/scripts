@@ -19,14 +19,12 @@ header-includes:
 
 header="
 ---
-title: Tratamiento multidisciplinar del cáncer de cuello uterino
+title: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 author:
     - Ricardo Ander-Egg
 abstract: |
 
-    En los estadíos IB-1/2 el tratamiento es cirugía radical, para los estdíos
-    IB3 en adelante el tratamiento es quimioterapia, junto con radioterapia
-    externa y braquiterapia.
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin augue nec ligula congue, et semper nulla volutpat. Sed erat nulla, consequat sit amet molestie sit amet, dictum eu purus. Morbi sit amet fringilla magna, sed euismod lorem. Sed elementum orci quis pellentesque facilisis. In mollis, justo a lobortis luctus, ipsum mauris consectetur diam, in vehicula sem neque ac nunc. Mauris viverra lacinia lectus, non blandit nisi ultrices in. Vivamus vehicula velit at fringilla dapibus. In at augue nibh. Ut dui sapien, viverra sed felis vitae, feugiat finibus dolor. In sapien sapien, convallis semper venenatis quis, tincidunt ac magna. Cras condimentum egestas accumsan. Suspendisse eros nisi, cursus eget tellus sit amet, condimentum iaculis nisl.
 
 ---
 
