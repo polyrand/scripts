@@ -42,9 +42,16 @@ pip install --upgrade ipykernel black flake8 pycodestyle pydocstyle flake8-bugbe
 if [[ ! -d .vscode ]]; then
     mkdir .vscode
 
-    interpreter='{
-    "python.pythonPath": ".venv/bin/python"
-}'
+interpreter=$(cat <<EOF
+{
+    "python.pythonPath": "$(pwd)/.venv/bin/python"
+}
+EOF
+)
+
+    # interpreter='{
+    # "python.pythonPath": ".venv/bin/python"
+# }'
 
     echo "$interpreter" >> .vscode/settings.json
 fi
@@ -55,9 +62,16 @@ if [[ ! -f .vim/coc-settings.json ]]; then
 
     [ -d .vim ] || mkdir .vim
 
-    interpreter='{
-    "python.pythonPath": ".venv/bin/python"
-}'
+interpreter=$(cat <<EOF
+{
+    "python.pythonPath": "$(pwd)/.venv/bin/python"
+}
+EOF
+)
+
+    # interpreter='{
+    # "python.pythonPath": ".venv/bin/python"
+# }'
 
     echo "$interpreter" >> .vim/coc-settings.json
 fi
