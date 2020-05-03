@@ -2,8 +2,8 @@
 
 # usage
 if [[ $1 == 'h' ]]; then
-    echo "Usage: mkpip [NAME] [kernel/nokernel] (anything that != 'kernel' really) [ln]?
-Example: mkpip nlp nokernel ln"
+    echo "Usage: mkpip [NAME] [envrc]? [kernel/nokernel]? [ln]?
+Example: mkpip nlp envrc nokernel noln"
     exit 1
 fi
 
@@ -43,7 +43,7 @@ if [[ ! -d .vscode ]]; then
     mkdir .vscode
 
     interpreter='{
-    "python.pythonPath": ".venv/bin/python"
+    "python.pythonPath": "$(pwd)/.venv/bin/python"
 }'
 
     echo "$interpreter" >> .vscode/settings.json
@@ -55,19 +55,31 @@ if [[ ! -f .vim/coc-settings.json ]]; then
     [ -d .vim ] || mkdir .vim
 
     interpreter='{
-    "python.pythonPath": ".venv/bin/python"
+    "python.pythonPath": "$(pwd)/.venv/bin/python"
 }'
 
     echo "$interpreter" >> .vim/coc-settings.json
 fi
 
-if [[ $2 == 'kernel' ]]; then
+# .envrc
+# nested if's, not much but honest work
+if [[ $2 == 'envrc' ]]; then
+    if hash direnv 2>/dev/null; then
+        envrcconfig='
+    export VIRTUAL_ENV=.venv
+    layout python-venv
+    '
+    echo "$envrcconfig" >> .envrc & direnv allow
+    fi
+fi
+
+if [[ $3 == 'kernel' ]]; then
     echo "Enabling kernel env for Jupyter"
     ipython kernel install --user --name="$NAME"
 fi
 
 
-if [[ $3 == 'ln' ]]; then
+if [[ $4 == 'ln' ]]; then
     echo "Creating symlink of virtualenv to ~/.virtualenvs"
     ln -s $(pwd)/.venv ~/.virtualenvs/"$NAME"
 fi
