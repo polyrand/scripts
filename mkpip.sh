@@ -43,19 +43,20 @@ if [[ ! -d .vscode ]]; then
     mkdir .vscode
 
     interpreter='{
-    "python.pythonPath": "$(pwd)/.venv/bin/python"
+    "python.pythonPath": ".venv/bin/python"
 }'
 
     echo "$interpreter" >> .vscode/settings.json
 fi
 
 # nvim settings
+# "python.pythonPath": "$(pwd)/.venv/bin/python"
 if [[ ! -f .vim/coc-settings.json ]]; then
 
     [ -d .vim ] || mkdir .vim
 
     interpreter='{
-    "python.pythonPath": "$(pwd)/.venv/bin/python"
+    "python.pythonPath": ".venv/bin/python"
 }'
 
     echo "$interpreter" >> .vim/coc-settings.json
