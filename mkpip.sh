@@ -34,7 +34,7 @@ echo "Python location"
 command -v python
 
 # basic libs
-pip install --upgrade pip
+pip install --upgrade pip wheel
 pip install --upgrade pip-tools setuptools
 pip install --upgrade ipykernel black flake8 pycodestyle pydocstyle flake8-bugbear mypy bandit pytest isort autoflake
 
@@ -78,7 +78,7 @@ fi
 
 # .envrc
 # nested if's, not much but honest work
-if [[ $2 == 'envrc' ]]; then
+if [[ $1 == 'envrc' ]]; then
     if hash direnv 2>/dev/null; then
         envrcconfig='
     export VIRTUAL_ENV=.venv
@@ -88,13 +88,13 @@ if [[ $2 == 'envrc' ]]; then
     fi
 fi
 
-if [[ $3 == 'kernel' ]]; then
+if [[ $2 == 'kernel' ]]; then
     echo "Enabling kernel env for Jupyter"
     ipython kernel install --user --name="$NAME"
 fi
 
 
-if [[ $4 == 'ln' ]]; then
+if [[ $3 == 'ln' ]]; then
     echo "Creating symlink of virtualenv to ~/.virtualenvs"
     ln -s $(pwd)/.venv ~/.virtualenvs/"$NAME"
 fi
