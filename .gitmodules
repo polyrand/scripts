@@ -1,0 +1,3 @@
+[submodule "Taskfile"]
+	path = Taskfile
+	url = https://github.com/polyrand/Taskfile
