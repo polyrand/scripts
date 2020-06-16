@@ -22,7 +22,7 @@ header="
 title: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 author:
     - Ricardo Ander-Egg
-    - "NIUB: 17138844"
+    - NIUB 17138844
 abstract: |
 
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin augue nec ligula congue, et semper nulla volutpat. Sed erat nulla, consequat sit amet molestie sit amet, dictum eu purus. Morbi sit amet fringilla magna, sed euismod lorem. Sed elementum orci quis pellentesque facilisis. In mollis, justo a lobortis luctus, ipsum mauris consectetur diam, in vehicula sem neque ac nunc. Mauris viverra lacinia lectus, non blandit nisi ultrices in. Vivamus vehicula velit at fringilla dapibus. In at augue nibh. Ut dui sapien, viverra sed felis vitae, feugiat finibus dolor. In sapien sapien, convallis semper venenatis quis, tincidunt ac magna. Cras condimentum egestas accumsan. Suspendisse eros nisi, cursus eget tellus sit amet, condimentum iaculis nisl.
@@ -34,6 +34,7 @@ abstract: |
 
 
 
+\newpage
 
 ## Fuentes
 
