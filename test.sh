@@ -50,16 +50,12 @@ Example: mkpip nlp envrc nokernel noln
 -k | --kernel [CREATE A JUPYTER KERNEL FOR THE ENV]
 -l | --link [CREATE SYMLINK TO ~/.virtualenvs]
 "
-    exit 0
+    exit 1
 }
 
 log "==================== BEGIN ===================="
 
 ENVRC=NO
-CONFIG=NO
-LINK=NO
-KERNEL=NO
-
 
 # source: https://stackoverflow.com/a/14203146
 POSITIONAL=()
@@ -89,9 +85,6 @@ case $key in
     KERNEL=YES
     shift # past argument
     ;;
-    -h|--help)
-    print_usage
-    ;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
     shift # past argument
@@ -100,94 +93,20 @@ esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-# NAME=$1
+# if [[ -n $1 ]]; then
+#     echo "Last line of file specified as non-opt/last argument:"
+#     tail -1 "$1"
+# fi
 
-# create cenv folder named .venv
-python3 -m venv .venv
 
-# activate env
-source .venv/bin/activate
-
-# make sure we are using the right pip/python
-echo "Pip location:"
-pip_cmd=$(command -v pip)
-echo "$pip_cmd"
-
-current=$(pwd)
-pip_path="$current/.venv/bin/pip"
-echo "$pip_path"
-
-if [[ "$pip_cmd" -ef "$pip_path" ]]; then
-    echo "paths match"
-else
-    exit 1
+if [[ -n ${NAME} ]]; then
+    echo "${NAME}"
 fi
 
-echo "Python location"
-command -v python
-
-# basic libs
-pip install --upgrade pip wheel
-pip install --upgrade pip-tools setuptools
-pip install --upgrade ipykernel black flake8 pycodestyle pydocstyle flake8-bugbear mypy bandit pytest isort autoflake
-
-if [[ ${CONFIG} == YES ]]; then
-    # vscode settings
-    if [[ ! -d .vscode ]]; then
-        mkdir .vscode
-    
-    interpreter=$(cat <<EOF
-{
-    "python.pythonPath": "$(pwd)/.venv/bin/python"
-}
-EOF
-)
-
-        echo "$interpreter" >> .vscode/settings.json
-    fi
-
-    # nvim settings
-    # "python.pythonPath": "$(pwd)/.venv/bin/python"
-    if [[ ! -f .vim/coc-settings.json ]]; then
-    
-        [ -d .vim ] || mkdir .vim
-    
-    interpreter=$(cat <<EOF
-{
-    "python.pythonPath": "$(pwd)/.venv/bin/python"
-}
-EOF
-)
-
-        echo "$interpreter" >> .vim/coc-settings.json
-    fi
-fi
 
 if [[ ${ENVRC} == YES ]]; then
-    # .envrc
-    # nested if's, not much but honest work
-    echo "setting up envrc"
-    if hash direnv 2>/dev/null; then
-        envrcconfig='
-export VIRTUAL_ENV=.venv
-layout python-venv
-    '
-        echo "$envrcconfig" >> .envrc & direnv allow
-    fi
+    echo "it is"
+else
+    echo "it is not"
 fi
 
-if [[ ${KERNEL} == YES ]]; then
-    echo "Enabling kernel env for Jupyter"
-    ipython kernel install --user --name="${NAME}"
-fi
-
-if [[ ${LINK} == YES ]]; then
-    echo "Creating symlink of virtualenv to ~/.virtualenvs"
-    ln -s "$(pwd)"/.venv ~/.virtualenvs/"${NAME}"
-fi
-
-
-# Help message (extracted from script headers)
-usage() { grep '^#/' "$0" | cut --characters=4-; exit 0; }
-REGEX='(^|\W)(-h|--help)($|\W)'
-[[ "$*" =~ $REGEX ]] && print_usage || true
