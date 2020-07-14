@@ -42,9 +42,11 @@ trap on_exit EXIT
 
 # usage
 print_usage() {
-    echo "Usage: mkpip [NAME] [envrc]? [kernel/nokernel]? [ln]?
-Example: mkpip nlp envrc nokernel noln
+    echo "
+Example: mkpip --yes -n nlp -k --link
+-y | --yes [CREATE THE ENVIRONMENT]
 -n | --name [NAME OF THE ENVIRONMENT]
+-v | --version [python version, must be installed with pyenv]
 -c | --config [CREATE CONFIG FILES FOR vim/vscode]
 -e | --envrc [CREATE AN .envrc file]
 -k | --kernel [CREATE A JUPYTER KERNEL FOR THE ENV]
@@ -55,6 +57,7 @@ Example: mkpip nlp envrc nokernel noln
 
 log "==================== BEGIN ===================="
 
+CREATE=NO
 ENVRC=NO
 CONFIG=NO
 LINK=NO
@@ -72,6 +75,15 @@ case $key in
     NAME="$2"
     shift # past argument
     shift # past value
+    ;;
+    -v|--version)
+    VERSION="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -y|--yes)  # actually create the env
+    CREATE=YES
+    shift # past argument
     ;;
     -e|--envrc)
     ENVRC=YES
@@ -102,36 +114,54 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 # NAME=$1
 
-# create cenv folder named .venv
-python3 -m venv .venv
-
-# activate env
-source .venv/bin/activate
-
-# make sure we are using the right pip/python
-echo "Pip location:"
-pip_cmd=$(command -v pip)
-echo "$pip_cmd"
-
-current=$(pwd)
-pip_path="$current/.venv/bin/pip"
-echo "$pip_path"
-
-if [[ "$pip_cmd" -ef "$pip_path" ]]; then
-    echo "paths match"
+# check this better: https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash
+if [[ ${VERSION:+x} ]]; then
+    export PYENV_VERSION="${VERSION}"
+    log "python version selected: ${VERSION}"
 else
-    exit 1
+    log "using system python3"
 fi
 
-echo "Python location"
-command -v python
+log "python3 --version == $(python3 --version)"
 
-# basic libs
-pip install --upgrade pip wheel
-pip install --upgrade pip-tools setuptools
-pip install --upgrade ipykernel black flake8 pycodestyle pydocstyle flake8-bugbear mypy bandit pytest isort autoflake
+# exit 0
+
+if [[ ${CREATE} == YES ]]; then
+    log "creating environment"
+    
+    # create cenv folder named .venv
+    python3 -m venv .venv
+    
+    # activate env
+    source .venv/bin/activate
+    
+    # make sure we are using the right pip/python
+    echo "Pip location:"
+    pip_cmd=$(command -v pip)
+    log "pip command: $pip_cmd"
+    
+    current=$(pwd)
+    pip_path="$current/.venv/bin/pip"
+    log "pip path: $pip_path"
+    
+    if [[ "$pip_cmd" -ef "$pip_path" ]]; then
+        echo "paths match"
+    else
+        exit 1
+    fi
+    
+    echo "Python location"
+    command -v python
+    
+    log "installing basic libraries"
+    # basic libs
+    pip install --upgrade pip wheel
+    pip install --upgrade pip-tools setuptools
+    pip install --upgrade ipykernel black flake8 pycodestyle pydocstyle flake8-bugbear mypy bandit pytest isort autoflake
+fi
 
 if [[ ${CONFIG} == YES ]]; then
+    log "creating config files for vscode"
     # vscode settings
     if [[ ! -d .vscode ]]; then
         mkdir .vscode
@@ -146,6 +176,7 @@ EOF
         echo "$interpreter" >> .vscode/settings.json
     fi
 
+    log "creating config files for nvim"
     # nvim settings
     # "python.pythonPath": "$(pwd)/.venv/bin/python"
     if [[ ! -f .vim/coc-settings.json ]]; then
@@ -164,9 +195,9 @@ EOF
 fi
 
 if [[ ${ENVRC} == YES ]]; then
+    log "creating .envrc file"
     # .envrc
     # nested if's, not much but honest work
-    echo "setting up envrc"
     if hash direnv 2>/dev/null; then
         envrcconfig='
 export VIRTUAL_ENV=.venv
@@ -174,20 +205,27 @@ layout python-venv
     '
         echo "$envrcconfig" >> .envrc & direnv allow
     fi
+    log "envrc set up"
 fi
 
 if [[ ${KERNEL} == YES ]]; then
-    echo "Enabling kernel env for Jupyter"
+    log "adding kernel to jupyter"
+
     ipython kernel install --user --name="${NAME}"
+
+    log "kernel added"
 fi
 
 if [[ ${LINK} == YES ]]; then
-    echo "Creating symlink of virtualenv to ~/.virtualenvs"
+    log "creating symlink to ~/.virtualenvs"
+
     ln -s "$(pwd)"/.venv ~/.virtualenvs/"${NAME}"
+
+    log "symlink created"
 fi
 
 
 # Help message (extracted from script headers)
-usage() { grep '^#/' "$0" | cut --characters=4-; exit 0; }
-REGEX='(^|\W)(-h|--help)($|\W)'
-[[ "$*" =~ $REGEX ]] && print_usage || true
+# usage() { grep '^#/' "$0" | cut --characters=4-; exit 0; }
+# REGEX='(^|\W)(-h|--help)($|\W)'
+# [[ "$*" =~ $REGEX ]] && print_usage || true
