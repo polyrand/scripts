@@ -21,6 +21,7 @@ sudo apt update
 
 # install other libraries
 sudo apt install -y ripgrep
+sudo apt install fail2ban
 
 # install node & build-essential
 cd ~ || exit
@@ -28,13 +29,13 @@ cd ~ || exit
 
 # sudo bash nodesource_setup.sh
 
-curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt install -y nodejs
 sudo apt install -y build-essential
 
 # setup pm2
 sudo npm install pm2 -g
-sudo chown -R $USER:$(id -gn $USER) ~/.config
+# sudo chown -R $USER:$(id -gn $USER) ~/.config
 
 # setup python3.7
 sudo apt update
