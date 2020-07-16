@@ -60,3 +60,9 @@ echo "alias tnew='tmux new-session -s'" >> ~/.bash_aliases
 echo "alias tls='tmux ls'" >> ~/.bash_aliases
 echo "alias tat='tmux attach-session -t'" >> ~/.bash_aliases
 echo "alias tkill='tmux kill-session -t'" >> ~/.bash_aliases
+
+# SSH config
+# PermitEmptyPasswords no
+# PermitRootLogin no
+# Protocol 2
+# ClientAliveInterval 300
