@@ -47,6 +47,7 @@ Example: mkpip --yes -n nlp -k --link
 -y | --yes [CREATE THE ENVIRONMENT]
 -n | --name [NAME OF THE ENVIRONMENT]
 -v | --version [python version, must be installed with pyenv]
+-f | --full [install basics like pip-tools, black, ipykernel, flake8, etc.]
 -c | --config [CREATE CONFIG FILES FOR vim/vscode]
 -e | --envrc [CREATE AN .envrc file]
 -k | --kernel [CREATE A JUPYTER KERNEL FOR THE ENV]
@@ -62,7 +63,7 @@ ENVRC=NO
 CONFIG=NO
 LINK=NO
 KERNEL=NO
-
+FULL=NO
 
 # source: https://stackoverflow.com/a/14203146
 POSITIONAL=()
@@ -83,6 +84,10 @@ case $key in
     ;;
     -y|--yes)  # actually create the env
     CREATE=YES
+    shift # past argument
+    ;;
+    -f|--full)  # actually create the env
+    FULL=YES
     shift # past argument
     ;;
     -e|--envrc)
@@ -155,9 +160,13 @@ if [[ ${CREATE} == YES ]]; then
     
     log "installing basic libraries"
     # basic libs
-    pip install --upgrade pip wheel
-    pip install --upgrade pip-tools setuptools
-    pip install --upgrade ipykernel black flake8 pycodestyle pydocstyle flake8-bugbear mypy bandit pytest isort autoflake
+    pip install --upgrade pip wheel setuptools
+
+    if [[ ${FULL} == YES ]]; then
+        log "creating config files for vscode"
+        pip install --upgrade pip-tools
+        pip install --upgrade ipykernel black flake8 pycodestyle pydocstyle flake8-bugbear mypy bandit pytest isort autoflake
+    fi
 fi
 
 if [[ ${CONFIG} == YES ]]; then
