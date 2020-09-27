@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  width: 320px;
+  margin: 20px auto;
+  font: 100% system-ui;
+}
+
+label {
+  background: darkorchid;
+  color: white;
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+}
+label textarea {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+</style>
+</head>
+<body>
+
+<label>
+  Click once to copy
+  <textarea onclick="this.select(); document.execCommand('copy');">&#8203;</textarea>
+</label>
+
+</body>
+</html> 

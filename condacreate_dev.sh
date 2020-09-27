@@ -19,7 +19,7 @@ echo "Using Python version: $VERSION"
 conda create --name "$NAME" python="$VERSION"
 
 # basic libs
-conda install --name "$NAME" -c conda-forge nodejs=14.5.0
+conda install --name "$NAME" -c conda-forge nodejs --repodata-fn=repodata.json
 conda install -y --name "$NAME" -c conda-forge ipython jupyterlab nb_conda_kernels black isort ipywidgets widgetsnbextension
 # jupyter lab extensions
 conda run -n "$NAME" jupyter labextension install @jupyterlab/toc --no-build
@@ -33,7 +33,7 @@ conda install -y --name "$NAME" -c conda-forge jupyterlab_code_formatter jupytex
 
 conda run -n "$NAME" jupyter serverextension enable --py jupyterlab_code_formatter
 
-conda run -n "$NAME" jupyter lab build
+conda run -n "$NAME" jupyter lab build --dev-build=False
 
 if [[ "$3" == 'alias' ]]; then
     echo "alias $NAME='conda activate $NAME'" >> ~/dotfiles/.condalias

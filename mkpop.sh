@@ -105,10 +105,6 @@ case $key in
     CONFIG=YES
     shift # past argument
     ;;
-    -l|--link)
-    LINK=YES
-    shift # past argument
-    ;;
     -k|--kernel)
     KERNEL=YES
     shift # past argument
@@ -135,7 +131,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 # if [[ -z "$someVar" ]]; then
 # ...
 if [[ ${VERSION:+x} ]]; then
-    export PYENV_VERSION="${VERSION}"
+    pyenv local "${VERSION}"
     log "python version selected: ${VERSION}"
 else
     log "using system python3"
@@ -149,37 +145,11 @@ if [[ ${CREATE} == YES ]]; then
     log "creating environment"
     
     # create cenv folder named .venv
-    python3 -m venv "$FOLDER_NAME"
+    poetry init
     
-    # activate env
-    source "$FOLDER_NAME"/bin/activate
-    
-    # make sure we are using the right pip/python
-    echo "Pip location:"
-    pip_cmd=$(command -v pip)
-    log "pip command: $pip_cmd"
-    
-    current=$(pwd)
-    pip_path="$current"/"$FOLDER_NAME"/bin/pip
-    log "pip path: $pip_path"
-    
-    if [[ "$pip_cmd" -ef "$pip_path" ]]; then
-        echo "paths match"
-    else
-        exit 1
-    fi
-    
-    echo "Python location"
-    command -v python
-    
-    log "installing basic libraries"
-    # basic libs
-    pip install --upgrade pip wheel setuptools
-
     if [[ ${FULL} == YES ]]; then
-        log "creating config files for vscode"
-        pip install --upgrade pip-tools
-        pip install --upgrade ipykernel black flake8 pycodestyle pydocstyle flake8-bugbear mypy bandit pytest isort autoflake
+        log "installing basic libraries"
+        poetry add --dev ipykernel black flake8 pycodestyle pydocstyle flake8-bugbear mypy bandit pytest isort autoflake
     fi
 fi
 
@@ -234,18 +204,18 @@ fi
 if [[ ${KERNEL} == YES ]]; then
     log "adding kernel to jupyter"
 
-    ipython kernel install --user --name="${NAME}"
+    poetry run python -m ipykernel install --user --name="${NAME}"
 
     log "kernel added"
 fi
 
-if [[ ${LINK} == YES ]]; then
-    log "creating symlink to ~/.virtualenvs"
+# if [[ ${LINK} == YES ]]; then
+#     log "creating symlink to ~/.virtualenvs"
 
-    ln -s "$(pwd)"/"$FOLDER_NAME" ~/.virtualenvs/"${NAME}"
+#     ln -s "$(pwd)"/"$FOLDER_NAME" ~/.virtualenvs/"${NAME}"
 
-    log "symlink created"
-fi
+#     log "symlink created"
+# fi
 
 
 # Help message (extracted from script headers)
