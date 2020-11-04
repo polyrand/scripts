@@ -1,4 +1,5 @@
-set -eou pipefail
+set -e
+# set -eou pipefail
 
 cd
 
@@ -19,8 +20,10 @@ cat << EOF > .condarc
 channels:
   - fastai
   - pytorch
+  - conda-forge
   - defaults
 channel_priority: strict
+auto_activate_base: false
 EOF
 
 wget -q $DOWNLOAD

@@ -11,7 +11,7 @@ shopt -s inherit_errexit 2>/dev/null || true
 # Causes a pipeline to return the exit status of the last command in the pipe that returned a non-zero return value.
 set -o pipefail
 # Attempt to use undefined variable outputs error message, and forces an exit
-set -o nounset
+# set -o nounset
 # makes iterations and splitting less surprising
 IFS=$'\n\t'
 # full path current folder
@@ -46,12 +46,18 @@ on_exit() {
 }
 trap on_exit EXIT
 
+# [[ $(id -u) = 0 ]] || [[ -z $SUDO_USER ]] || fail "Please run 'sudo $0'"
+[[ $(id -u) = 0 ]] || fail "Please run 'sudo $0'"
+
 export _BLE_SUPPRESS_ERRORS=0
 export _BLE_NAV=''
 _BLE_FINISHED=0
+touch ~/.blealready
 export _BLE_ALREADY=~/.blealready # store already run commands
 test ${#_BLE_ALREADY} || fail "_BLE_ALREADY tempfile can not be created"
 
+export _BLE_ALREADY_2=/root/.blealready # store already run commands
+test ${#_BLE_ALREADY_2} || fail "_BLE_ALREADY tempfile can not be created"
 
 absolute_path() {
   local path
@@ -72,7 +78,8 @@ ble_print_fail() {
 
 ble_serialize_command() {
   oldIFS=$IFS
-  IFS=$'\t'; echo -e "$PWD\t$*"
+  # IFS=$'\t'; echo -e "$PWD\t$*"
+  IFS=$'\t'; echo -e "$*"
   IFS=$oldIFS
 }
 
@@ -95,18 +102,32 @@ ble_handle_exitstatus() {
 
 unless_already() {
   local cmd=$1; shift
-  local path=`absolute_path "$cmd"`
-  local scmd=`ble_serialize_command "$path" "$@"`
+  # local path=`absolute_path "$cmd"`
+  # local scmd=`ble_serialize_command "$path" "$@"`
+  local scmd=`ble_serialize_command "$cmd"`
+  # if ! grep -q "$scmd" < ${B} || ! grep -q "$scmd" < ${B2}; then
   if ! grep -q "$scmd" < ${_BLE_ALREADY}; then
+    "$cmd"
+    export _BLE_ALREADY=~/.blealready # store already run commands
+    export _BLE_ALREADY_2=/root/.blealready # store already run commands
     echo "$scmd" >> "${_BLE_ALREADY}" || fail "can't write to _BLE_ALREADY file (${_BLE_ALREADY})"
-    if ! "$path" "$@"; then
-      ble_handle_exitstatus $? "$@"
-    fi
+    echo "$scmd" >> "${_BLE_ALREADY_2}" || fail "can't write to _BLE_ALREADY file (${_BLE_ALREADY_2})"
+    # if ! "$path" "$@"; then
+    #   ble_handle_exitstatus $? "$@"
+    # fi
+  else
+    echo "Command: $scmd already executed. Skipping..."
   fi
 }
 
 
 log "==================== BEGIN ===================="
+
+
+# if sudo bash -c '[[ -e /root/.blealready && -e ~/.blealready ]]'; then
+#     cd
+#     sudo bash -c 'cat /root/.blealready $(pwd)/.blealready | sort | uniq > tmpfile && mv tmpfile $(pwd)/.blealready'
+# fi
 
 setup_user() {
     [[ $(id -u) = 0 ]] || [[ -z $SUDO_USER ]] || fail "Please run 'sudo $0'"
@@ -117,13 +138,16 @@ setup_user() {
     echo "$NEWHOST" > /etc/hostname
     grep -q "$NEWHOST" /etc/hosts || echo "127.0.0.1 $NEWHOST" >> /etc/hosts
     
-    if [[ $SUDO_USER = "root" ]]; then
+    if [[ $SUDO_USER = "root" ]] || [[ $USER = "root" ]]; then
       echo "You are running as root, so let's create a new user for you"
       [[ $NEWUSER ]] && SUDO_USER=$NEWUSER || read -e -p "Please enter the username for your new user: " SUDO_USER
-      [[ -z $SUDO_USER ]] || fail Empty username not permitted
+      echo "Setting up user: $SUDO_USER"
+      [[ -n $SUDO_USER ]] || fail "Empty username not permitted"
       adduser "$SUDO_USER" --gecos ''
       usermod -aG sudo "$SUDO_USER"
       HOME=/home/$SUDO_USER
+      touch ~/.blealready
+      export _BLE_ALREADY=~/.blealready # store already run commands
       echo "$SUDO_USER  ALL=(ALL:ALL) ALL" >> /etc/sudoers
       cp -r "$PWD" ~/
       chown -R "$SUDO_USER":"$SUDO_USER" ~/
@@ -138,9 +162,19 @@ setup_user() {
     fi
     echo 'Defaults        timestamp_timeout=3600' >> /etc/sudoers
 }
-# run anyway, because it will only run if user = root
 unless_already setup_user
 
+set_home() {
+  [[ $NEWUSER ]] && SUDO_USER=$NEWUSER || read -e -p "Please enter the username to set home in current script: " SUDO_USER
+  echo "Setting home to: $SUDO_USER"
+  [[ -n $SUDO_USER ]] || fail "Empty username not permitted"
+  HOME=/home/$SUDO_USER
+
+}
+set_home
+
+
+touch ~/.blealready
 export _BLE_ALREADY=~/.blealready # store already run commands
 test ${#_BLE_ALREADY} || fail "_BLE_ALREADY tempfile can not be created"
 
@@ -159,6 +193,7 @@ unless_already setup_ssh
 
 add_apt_sources() {
     CODENAME=$(lsb_release -cs)
+    sudo add-apt-repository -y ppa:neovim-ppa/stable
     cat >> /etc/apt/sources.list << EOF
 deb https://cli.github.com/packages $CODENAME main
 deb http://ppa.launchpad.net/apt-fast/stable/ubuntu $CODENAME main
@@ -206,10 +241,10 @@ EOF
     chown root:root /etc/{logrotate,apt-fast}.conf /etc/systemd/journald.conf /etc/apt/apt.conf.d/{50unattended-upgrades,10periodic}
     
     apt-fast -qy install python
-    apt-fast -qy install vim-nox exiftool jq whois shellcheck neovim python3-neovim python-neovim python3-powerline fail2ban direnv ripgrep fzf fd-find rsync ubuntu-drivers-common python3-pip ack lsyncd wget bzip2 ca-certificates git build-essential \
-      software-properties-common curl grep sed dpkg libglib2.0-dev zlib1g-dev lsb-release tmux less bat htop exuberant-ctags openssh-client python-is-python3 \
-      python3-pip python3-dev dos2unix gh pigz ufw bash-completion ubuntu-release-upgrader-core unattended-upgrades cpanminus libmime-lite-perl \
-      opensmtpd mailutils
+    apt-fast -qy install vim-nox exiftool jq whois shellcheck neovim python3-neovim python3-powerline fail2ban direnv ripgrep fzf fd-find rsync ubuntu-drivers-common python3-pip ack lsyncd wget bzip2 ca-certificates git build-essential \
+      software-properties-common curl grep sed dpkg libglib2.0-dev zlib1g-dev lsb-release tmux less htop exuberant-ctags openssh-client python-is-python3 \
+      python3-pip python3-dev dos2unix gh pigz ufw bash-completion ubuntu-release-upgrader-core unattended-upgrades cpanminus pipx libmime-lite-perl \
+      opensmtpd mailutils cron
     env DEBIAN_FRONTEND=noninteractive APT_LISTCHANGES_FRONTEND=mail apt-fast full-upgrade -qy -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'
     sudo apt -qy autoremove
     
@@ -246,7 +281,10 @@ unless_already setup_main
 
 
 setup_docker() {
-    sudo apt remove docker docker-engine docker.io containerd runc
+    log "Installing docker"
+    export DEBIAN_FRONTEND=noninteractive
+    dpkg --remove docker docker-engine docker.io containerd runc
+    # sudo apt --yes --purge remove $pkgToRemoveList
     
     # install a few prerequisite packages which let apt use packages over HTTPS
     sudo apt-fast -qy install apt-transport-https ca-certificates curl software-properties-common gnupg-agent
@@ -265,26 +303,27 @@ setup_docker() {
     apt-cache policy docker-ce
     
     # install Docker:
-    sudo apt install docker-ce docker-ce-cli containerd.io
+    sudo apt -y install docker-ce docker-ce-cli containerd.io
     
     # If you want to avoid typing sudo whenever you run the docker command,
     # add your username to the docker group
-    sudo groupadd docker
+    # sudo groupadd docker
+    log "Adding username to docker group"
     sudo usermod -aG docker "${SUDO_USER}"
     
-    # activate the changes to groups
-    newgrp docker
+    # log "activate the changes to groups"
+    # newgrp docker
     
     # To apply the new group membership, log out of the server and back in, or type the following
     # su - ${USER}
     
     # Confirm that your user is now added to the docker group
-    id -nG
+    # id -nG
     
     # Check that it’s running
-    sudo systemctl status docker
+    # sudo systemctl status docker
     
-    # install compose THE VERSION IS HARDCODED
+    log "install compose THE VERSION IS HARDCODED"
     sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     sudo chmod +x /usr/local/bin/docker-compose
     sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
@@ -309,6 +348,12 @@ setup_ufw() {
 unless_already setup_ufw
 
 python -m pip install pip -Uq
+
+install_pipx() {
+    python -m pip install --user pipx
+    python -m pipx ensurepath
+}
+# unless_already install_pipx
 
 echo 'We need to reboot your machine to ensure kernel upgrades are installed'
 echo 'First, make sure you can login in a new terminal, and that you can run `sudo -i`.'
