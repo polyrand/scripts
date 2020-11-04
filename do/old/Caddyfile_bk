@@ -1,0 +1,78 @@
+{
+  email examplio.official@gmail.com
+}
+
+(secheaders) {
+    header {
+	    # enable HSTS
+	    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+	    # disable clients from sniffing the media type
+	    X-Content-Type-Options "nosniff"
+
+	    # clickjacking protection
+	    X-Frame-Options "DENY"
+
+       # X-Frame-Options "SAMEORIGIN"
+       X-XSS-Protection "1; mode=block"
+
+	    # keep referrer data off of HTTP connections
+	    Referrer-Policy "no-referrer-when-downgrade"
+  }
+}
+
+demoapp.exampl.io {
+  encode zstd gzip
+  # basicauth {
+  #     Bob JDJhJDEwJElkTkdZQmRNVVFzUEh0WUw0dTZLZE9adm42STJSYWJNUGFNNUVySmFIR2subXoxdmJyN0hL
+  #     # tmr(s)ts
+  # }
+
+  @adminip {
+      remote_ip 95.23.237.0
+    }
+
+  reverse_proxy @adminip 10.135.191.169:8000
+
+    log {
+        output file /var/log/caddy.demoapp.exampl.io.log {
+            roll_size 20MiB
+	    roll_keep 2
+	    roll_keep_for 720h
+    }
+  }
+
+
+}
+
+exampl.io {
+  encode zstd gzip
+
+  import secheaders
+
+  respond /* "hello"
+  respond /health-check 200
+
+
+  handle_errors {
+	rewrite * /error.html
+	file_server
+  }
+
+  reverse_proxy /api/* node1:80 localhost:80 node3:80 {
+	lb_policy least_conn
+  }
+
+
+  log {
+    output file /var/log/caddy.exampl.io.log {
+        roll_size 20MiB
+	roll_keep 2
+	roll_keep_for 720h
+    }
+  }
+}
+
+www.exampl.io {
+  redir https://exampl.io{uri} permanent
+}
