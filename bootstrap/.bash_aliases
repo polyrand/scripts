@@ -76,7 +76,7 @@ alias portstcp='netstat -tulan -p tcp'
 alias portsudp='netstat -tulan -p udp'
 
 alias g='git'
-cleanblank='awk NF'
+alias cleanblank='awk NF'
 alias syncro='rsync -Pavzh'
 
 alias ca='bat'
@@ -191,6 +191,7 @@ function sal() {
     source ~/.bash_prompt
     source ~/.functions
     source ~/.aliases
+    source ~/.bash_aliases
 }
 
 function img64() {
@@ -319,15 +320,6 @@ function mksshrsa() {
     ssh-keygen -t ssh-keygen -t rsa -b 4096 -o -a 100 -f ~/.ssh/"$1" -q -N ""
 }
 
-function ksub() {
-    local image_version="$1"
-    sd "version: \"\d+\"" "version: \"$image_version\"" deployment.yaml
-    local part1='image: fdcreg.azurecr.io/firstderm/(.*):\d+'
-    local part2="image: fdcreg.azurecr.io/firstderm/\$1:$image_version"
-    sd "$part1" "$part2" deployment.yaml
-
-    # sed -E -i "s/(version:\s)\"9042\"/$image_version/" deployment.yaml
-}
 
 function ssht () {
     ssh "$1" -t "tmux new-session -s $2 || tmux attach-session -t $2"

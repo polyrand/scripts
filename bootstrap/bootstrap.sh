@@ -241,7 +241,7 @@ EOF
     chown root:root /etc/{logrotate,apt-fast}.conf /etc/systemd/journald.conf /etc/apt/apt.conf.d/{50unattended-upgrades,10periodic}
     
     apt-fast -qy install python
-    apt-fast -qy install vim-nox exiftool jq whois shellcheck neovim python3-neovim python3-powerline fail2ban direnv ripgrep fzf fd-find rsync ubuntu-drivers-common python3-pip ack lsyncd wget bzip2 ca-certificates git build-essential \
+    apt-fast -qy install exiftool jq whois shellcheck neovim python3-neovim python3-powerline fail2ban direnv ripgrep fzf fd-find rsync ubuntu-drivers-common python3-pip ack lsyncd wget bzip2 ca-certificates git build-essential \
       software-properties-common curl grep sed dpkg libglib2.0-dev zlib1g-dev lsb-release tmux less htop exuberant-ctags openssh-client python-is-python3 \
       python3-pip python3-dev dos2unix gh pigz ufw bash-completion ubuntu-release-upgrader-core unattended-upgrades cpanminus pipx libmime-lite-perl \
       opensmtpd mailutils cron
@@ -286,23 +286,23 @@ setup_docker() {
     dpkg --remove docker docker-engine docker.io containerd runc
     # sudo apt --yes --purge remove $pkgToRemoveList
     
-    # install a few prerequisite packages which let apt use packages over HTTPS
+    log "install a few prerequisite packages which let apt use packages over HTTPS"
     sudo apt-fast -qy install apt-transport-https ca-certificates curl software-properties-common gnupg-agent
     
-    # add the GPG key for the official Docker repository to your system
+    log "add the GPG key for the official Docker repository to your system"
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     
-    # Add the Docker repository to APT sources
+    log "Add the Docker repository to APT sources"
     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
     # sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
     
-    # update the package database with the Docker packages from the newly added repo
+    log "update the package database with the Docker packages from the newly added repo"
     sudo apt update
     
-    # Make sure you are about to install from the Docker repo instead of the default Ubuntu repo
+    log "Make sure you are about to install from the Docker repo instead of the default Ubuntu repo"
     apt-cache policy docker-ce
     
-    # install Docker:
+    log "install Docker"
     sudo apt -y install docker-ce docker-ce-cli containerd.io
     
     # If you want to avoid typing sudo whenever you run the docker command,
@@ -334,11 +334,12 @@ unless_already setup_docker
 
 
 setup_ufw() {
-    # Enable firewall and allow ssh
+    log "Enable firewall and allow ssh"
     ufw default deny incoming
     ufw default allow outgoing
     ufw allow ssh
     ufw --force enable
+    log "install ufw-docker"
     sudo wget -O /usr/local/bin/ufw-docker \
         https://github.com/chaifeng/ufw-docker/raw/master/ufw-docker
     chmod +x /usr/local/bin/ufw-docker
