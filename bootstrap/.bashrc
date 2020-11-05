@@ -36,7 +36,6 @@ function completion_exports () {
 }
 
 
-. ~/z.sh
 
 # # virtualenv and virtualenvwrapper
 function vvv () {
@@ -48,20 +47,20 @@ function vvv () {
 
 
 # >>> conda initialize >>>
-function ccc () {
-    # !! Contents within this block are managed by 'conda init' !!
-    __conda_setup="$('/Users/r/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-    if [ $? -eq 0 ]; then
-        eval "$__conda_setup"
-    else
-        if [ -f "/Users/r/miniconda3/etc/profile.d/conda.sh" ]; then
-            . "/Users/r/miniconda3/etc/profile.d/conda.sh"
-        else
-            export PATH="/Users/r/miniconda3/bin:$PATH"
-        fi
-    fi
-    unset __conda_setup
-}
+# function ccc () {
+#     # !! Contents within this block are managed by 'conda init' !!
+#     __conda_setup="$('/Users/r/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+#     if [ $? -eq 0 ]; then
+#         eval "$__conda_setup"
+#     else
+#         if [ -f "/Users/r/miniconda3/etc/profile.d/conda.sh" ]; then
+#             . "/Users/r/miniconda3/etc/profile.d/conda.sh"
+#         else
+#             export PATH="/Users/r/miniconda3/bin:$PATH"
+#         fi
+#     fi
+#     unset __conda_setup
+# }
 # <<< conda initialize <<<
 
 # completion exports before to have docker-machine available
@@ -70,11 +69,11 @@ base_exports
 # vvv
 # ccc
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-[ -f ~/dotfiles/z.sh ] && source ~/dotfiles/z.sh
+[ -f ~/z.sh ] && source ~/z.sh
 
 
 # Created by `userpath` on 2020-01-06 11:30:41
-export PATH="$PATH:/Users/r/.local/bin"
+export PATH="$PATH:$HOME/.local/bin"
 
 eval "$(direnv hook bash)"
 eval "$(pyenv init - --no-rehash bash)"  # faster with --no-rehash bash

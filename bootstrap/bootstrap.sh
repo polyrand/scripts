@@ -221,7 +221,7 @@ setup_swap() {
 
 
 setup_z () {
-    sudo wget -O ~/z.sh \
+    wget -O ~/z.sh \
         https://raw.githubusercontent.com/rupa/z/master/z.sh
     chmod +x ~/z.sh
 }
