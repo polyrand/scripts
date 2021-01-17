@@ -1,0 +1,12 @@
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7
+  - ipython
+  - jupyterlab=3
+  - nb_conda_kernels
+  - black
+  - isort
+  - jupyterlab_code_formatter
+  - ipywidgets
+name: dev
